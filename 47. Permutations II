@@ -1,0 +1,52 @@
+47. Permutations II
+Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+
+For example,
+[1,1,2] have the following unique permutations:
+[
+  [1,1,2],
+  [1,2,1],
+  [2,1,1]
+]
+时间 O(N) 空间 O(N) 递归栈
+
+The same as the #46, but we have to sort first and get rid of the duplicate integer when searching. Only add unique element.
+
+public class Solution {
+    
+    List<List<Integer>> res;
+    boolean[] used;
+    
+    public List<List<Integer>> permuteUnique(int[] nums) {
+    	res = new LinkedList<List<Integer>>();
+    	used=new boolean[nums.length];
+	Arrays.sort(nums);
+    	LinkedList<Integer> tmp= new LinkedList<Integer>();
+    	helper(nums,tmp);
+    	return res;
+    }
+    public void helper(int[] nums, Linkedlist<Integer> tmp){
+    	if(tmp.size()==nums.length){
+    		LinkedList<Integer> list = new LinkedList<Integer>(tmp);
+    		res.add(list);
+    	}
+    	else{
+    		for(int i=0; i<nums.length; i++){
+                // 遇到已经加过的元素就跳过
+    			if(used[i]){
+    				continue;
+    			}
+                // 加入该元素后继续搜索
+    			used[i]=true;
+    			tmp.add(nums[i]);
+    			helper(nums, tmp);
+    			tmp.remove(tmp.size()-1);
+    			used[i]=false
+                // 跳过本轮的重复元素，确保每一轮只会加unique的数字
+    			while(i<nums.length-1&&nums[i]==nums[i+1]){
+    				i++
+    			}
+    		}
+    	}
+    }
+  }
