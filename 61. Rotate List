@@ -1,0 +1,71 @@
+61. Rotate List
+Given a list, rotate the list to the right by k places, where k is non-negative.
+
+For example:
+Given 1->2->3->4->5->NULL and k = 2,
+return 4->5->1->2->3->NULL.
+
+双指针法
+时间 O(N) 空间 O(1)
+
+旋转链表的本质，就是把链表的后半部分放到前面来，所以关键在于如何找链表后半部分的起始节点。实际上，我们用一个快指针先走k步，然后快慢指针同时走，这样当快指针到末尾时，慢指针就到链表后半部分的起始节点了。不过，由于k可能大于链表的长度，所以我们要先对k取链表长度的模。要计算链表长度只要遍历一遍链表就行了。
+
+注意
+k取余后为0，或者原链表为空的情况下，都要直接返回原链表，不然将慢指针的下一个作为新链表头会出错。
+
+题解：
+
+这道题主要先理解题意，就是倒着数k个node，从那开始到结尾和之前那部分对调，那个例子就是，4->5拿前面来，1->2->3拿后面去。
+
+几个特殊：
+
+k是可以大于整个list的长度的，所以这时要对k对len取模
+
+如果取模之后得0，相当于不用rotate，直接返回
+
+ 
+
+处理完特殊情况后，就用熟悉的faster/slower双指针解决就好（看到这种linkedlist，倒着数数的，就条件反射了）
+
+先对faster设步长为n，然后faster和slower再一起走，知道faster.next==null，说明slower指向要倒着数的开始点的前一个位置。
+
+所以slow.next就是要返回的newhead，保存一下。
+
+然后把faster.next接到head上，slower.next存为null，作队尾。
+
+这样就把list给rotate了。
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+    	ListNode fst=head;
+    	int length=0;
+    	while(fst!=null){
+    		fst=fst.next;
+    		length++;
+    	}
+    	if(head==null || k%length==0){
+    		return head;
+    	}
+    	fst=head;
+    	for(int i=0; i<k%length;i++){
+    		fst=fst.next;
+    	}
+    	ListNode slw=head;
+    	while(fst.next!=null){
+    		slw=slw.next;
+    		fst=fst.next;
+    	}
+    	ListNode newHead=slw.next;
+    	fst.next=head;
+    	slw.next=null;
+    	return newHead;
+    ｝
+｝

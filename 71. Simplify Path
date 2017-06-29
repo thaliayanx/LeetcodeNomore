@@ -1,0 +1,46 @@
+71. Simplify Path
+Given an absolute path for a file (Unix-style), simplify it.
+
+For example,
+path = "/home/", => "/home"
+path = "/a/./b/../../c/", => "/c"
+
+栈法
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+思路很简单，先将整个路径按照/分开来，然后用一个栈，遇到..时弹出一个，遇到.和空字符串则不变，遇到正常路径则压入栈中。
+
+注意
+如果结果为空，要返回一个/
+弹出栈时要先检查栈是否为空
+
+public class Solution {
+    public String simplifyPath(String path) {
+    	Stack<String> res= new Stack<String>();
+    	String[] parts=path.split("/");
+    	for(String part: parts){
+    		switch(part){
+    			case".":
+    			case"":
+    				break;
+    			case"..":
+    				if(!res.isEmpty()){
+    					res.pop();
+    					break;
+    				}
+    			default:
+    				res.push(part);
+    		}
+    	}
+    	StringBuilder str=new StringBuilder();
+    	if(res.isEmpty()){
+    		return "/";
+    	}
+    	while(!res.isEmpty()){
+    		str.insert(0,"/"+res.pop());
+    	}
+    	return str.toString();
+    }
+}

@@ -1,0 +1,36 @@
+66. Plus One
+
+Given a non-negative integer represented as a non-empty array of digits, plus one to the integer.
+
+You may assume the integer do not contain any leading zero, except the number 0 itself.
+
+The digits are stored such that the most significant digit is at the head of the list.
+
+遇九置零法
+复杂度
+时间 O(N) 空间 O(1)
+
+思路
+简单的加法运算。这里需要注意的是，数字的最高位的下标是0，最低位下标是length-1，所以我们要从后向前模拟加法。不过这里有个小技巧，因为我们只要加1，所以不用完全模拟加法的所有规则：一个数如果不是9，那加1以后不会对其他位产生影响。根据这个思路，我们先把末尾所有连续的9置0，然后对从后往前第一个不是9的数加1就行了。如果越界的话，说明原数全是9，那就要建个新数组存放结果。
+
+System.arraycopy(src, 0, dst, 0, length) 可以用来高效拷贝数组
+
+public class Solution {
+    public int[] plusOne(int[] digits) {
+    	int i=digits.length-1;
+    	while(i>=0 && digits[i]==9){
+    		digits[i]=0;
+    		i--;
+    	}
+    	if(i<0){
+    		int[] res=new int[digits.length+1];
+    		System.arraycopy(digits,0,res,1,digits.length);
+    		res[0]=1;
+    		return res;
+    	}
+    	else{
+    		digits[i]+=1;
+    		return digits;
+    	}
+    ｝
+｝

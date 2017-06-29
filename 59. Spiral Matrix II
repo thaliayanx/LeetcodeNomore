@@ -1,0 +1,46 @@
+59. Spiral Matrix II
+Given an integer n, generate a square matrix filled with elements from 1 to n2 in spiral order.
+
+For example,
+Given n = 3,
+
+You should return the following matrix:
+[
+ [ 1, 2, 3 ],
+ [ 8, 9, 4 ],
+ [ 7, 6, 5 ]
+]
+
+时间 O(NM) 空间 O(1)
+
+本题就是按照螺旋的顺序把数字依次塞进去，我们可以维护上下左右边界的四个变量，一圈一圈往里面添加。最后要注意的是，如果n是奇数，要把中心那个点算上。
+
+public class Solution {
+    public int[][] generateMatrix(int n) {
+    	int[][] res=new int[n][n];
+    	int top=0,bottom=n-1,left=0,right=n-1;
+    	int num=1;
+    	while(left<right && top<bottom){
+    		for(int i=left; i<right; i++){
+    			res[top][i]=num++;
+    		}
+    		for(int i=top; i<bottom;i++){
+    			res[i][right]=num++;
+    		}
+    		for(int i=right; i>left; i--){
+    			res[bottom][i]=num++;
+    		}
+    		for(int i=bottom; i>top;i--){
+    			res[i][left]=num++;
+    		}
+    		left++;
+    		right--;
+    		top++;
+    		bottom--;
+    	}
+    	if(n%2==1){
+    		res[n/2][n/2]=num;
+    	}
+    	return res;
+    }
+}
