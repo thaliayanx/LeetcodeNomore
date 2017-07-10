@@ -1,0 +1,61 @@
+85. Maximal Rectangle
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+
+For example, given the following matrix:
+
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 6.
+
+动态规划 + 栈
+复杂度
+时间 O(NM) 空间 O(M)
+
+思路
+这题的解法基于上题。要求最大的矩形，实际上可以将矩阵的每一行，转化为上一题的直方图，而直方图的每个竖条的数字，就是该行对应坐标正上方，向上方向有多少个连续的1。要转化为直方图，方法是每一行的数值都累加上一行计算出来的数值，而第一行的数值就是本身。如果原始矩阵中遇到0，则累加中断，重新置0。
+
+0 0 1 1 0 -> 0 0 1 1 0
+0 0 1 1 0 -> 0 0 2 2 0
+1 1 0 0 0 -> 1 1 0 0 0
+1 1 1 0 0 -> 2 2 1 0 0
+
+public class Solution {
+    public int maximalRectangle(char[][] matrix) {
+    	int max=0;
+    	if(matrix.length==0) return 0;
+    	int[][] dp=new int[matrix.length][matrix[0].length];
+    	for(int i=0; i<matrix.length;i++){
+    	// 如果是第一行就是自身，如果遇到0则停止累加
+    		for(int j=0; j<matrix[0].length;j++){
+    			dp[i][j]= i==0? matrix[i][j]-'0' : matrix[i][j]=='1' ? dp[i-1][j]+matrix[i][j]-'0': 0;
+    		}
+    	}
+    	for(int i=0; i<matrix.length; i++){
+    	 //找每行的最大矩形
+    		int tmp= findMax(i, dp);
+    		max=Math.max(tmp, max);
+    	}
+    	return max;
+    }
+    public int findMax(int row, int[][] dp){
+    	if(dp[row].length==0){
+    		return 0;
+    	}
+    	Stack<Integer> stk=new Stack<Integer>();
+    	int i=1, max=dp[row][0];
+    	while(i<dp[row].length || (i==dp[row].length && !isEmpty())){
+    		if(i!=dp[row].length && (stk.isEmpty || dp[row][i]>=dp[row][stk.peek()])){
+    			stk.push(i);
+    			i++
+    		}
+    		else{
+    			int top=dp[row][stk.pop()];
+    			int tmp= !stk.isEmpty? top*(i-stk.peek()-1) : top*i;
+    			max=Math.max(max, tmp);
+    		}
+    	}
+    	return max;
+    }
+}

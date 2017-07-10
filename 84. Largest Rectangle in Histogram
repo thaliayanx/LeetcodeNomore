@@ -1,0 +1,44 @@
+84. Largest Rectangle in Histogram
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
+
+
+Above is a histogram where width of each bar is 1, given height = [2,1,5,6,2,3].
+
+
+The largest rectangle is shown in the shaded area, which has area = 10 unit.
+
+For example,
+Given heights = [2,1,5,6,2,3],
+return 10.
+
+栈法
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+遍历数组（直方图），如果后一个竖条高于或等于前一个竖条，则将其下标push进栈，如果后一个竖条（假设它的下标为i）较矮，说明可以开始计算前一个竖条(i-1)及之前那块上升区域最大的长方形面积了，这时将栈顶的竖条的下标pop出来，计算该竖条的面积。然后再看pop过后栈顶竖条(i-2)和后一个竖条(i)的大小关系，如果栈顶竖条(i-2)较矮，说明又构成了一个连续上升区域，则将后一个竖条(i)push进栈，否则继续计算栈顶竖条(i-2)的面积，这里要注意，因为(i-2)竖条比(i-1)竖条要靠左，所以i-2竖条能构成的最大长方形的宽度可以达到2，宽度的计算方法是用后一个竖条的下标i，减去再pop一个元素后栈顶竖条的下标(i-3)，再加上1。以此类推，如果一直pop到栈为空时，说明刚pop出来的竖条之前的所有竖条都比它自己高，不然不可能栈为空，那我们以左边全部的宽度作为长方形的宽度。这里计算宽度时，要减去上一个竖条的位置，而不是减去当前竖条的位置，因为有可能上一个竖条和当前竖条之间已经有些竖条被pop掉了，但他们肯定是高于当前竖条的，所以可以计算到宽度中。
+
+public class Solution {
+    public int largestRectangleArea(int[] heights) {
+    	if(heights.length==0){
+    		return 0;
+    	}
+    	Stack<Integer> stk=new Stack<Integer>();
+    	int =1, max=heights[0];
+    	stk.push(0);
+    	while(i<heights.length || (i==heights.length && !stk.isEmpty())){
+        // i==height.length 说明目前栈顶已经是最后一个竖条，那就要开始pop了
+    		if(i != heights.length && (stk.isEmpty() || heights[i] >= heights[stk.peek()])){
+    			stk.push(i);
+    			i++;
+    		}
+    		else{
+            // pop后栈为空的话说明之前所有竖条都比刚pop出来的矮
+    			int top=height[stk.pop()];
+    			int currmax= !stk.isEmpty()? top*(i-stk.peek()-1) : top*i;
+    			max=Math.max(currmax, max);
+    		}
+    	}
+    	return max;
+    }
+}
