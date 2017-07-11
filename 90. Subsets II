@@ -1,0 +1,52 @@
+90. Subsets II
+Given a collection of integers that might contain duplicates, nums, return all possible subsets.
+
+Note: The solution set must not contain duplicate subsets.
+
+For example,
+If nums = [1,2,2], a solution is:
+
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+
+深度优先搜索
+复杂度
+时间 O(NlogN) 空间 O(N) 递归栈空间
+
+思路
+思路和上题一样，区别在于如果有重复的只能加一次。好在我们已经先将数组排序（数组中有重复一般都可以用排序解决），所以重复元素是相邻的，我们为了保证重复元素只加一次，要把这些重复的元素在同一段逻辑中一起处理，而不是在递归中处理，不然就太麻烦了。所以我们可以先统计好重复的有n个，然后分别在集合中加上0个，1个，2个...n个，然后再分别递归。
+
+public class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+    	Arrays.sort(nums);
+    	List<List<Integer>> res=new ArrayList<List<Integer>>();
+        List<Integer> tmp=new ArrayList<Integer>();
+        res.add(tmp);
+        helper(nums, res, tmp, 0);
+        return res;
+    }
+    public void helper(int[] nums, List<List<Integer>> res, List<Integer> tmp, int index){
+    	if(index>nums.length){
+    		return;
+    	}
+    	int oldIndex=index;
+    	while(index<nums.length && nums[index]==nums[index+1]){
+    		index++;
+    	}
+    	helper(nums, res, tmp, index+1);
+    	for(int i=oldIndex;i<=index;i++){
+    		List<Integer> tmp2=new ArrayList<Integer>(tmp);
+    		for(int j=i; j<=index;j++){
+    			tmp2.add(nums[index]);
+    		}
+    		res.add(tmp2);
+    		helper(nums, res, tmp2, index+1);
+    	}
+    }
+}
