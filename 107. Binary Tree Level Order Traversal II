@@ -1,0 +1,45 @@
+107. Binary Tree Level Order Traversal II
+Given a binary tree, return the bottom-up level order traversal of its nodes' values. (ie, from left to right, level by level from leaf to root).
+
+For example:
+Given binary tree [3,9,20,null,null,15,7],
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its bottom-up level order traversal as:
+[
+  [15,7],
+  [9,20],
+  [3]
+]
+
+队列迭代
+复杂度
+时间 O(b^(h+1)-1) 空间 O(b^h)
+
+思路
+本题实质是广度优先搜索BFS，而用队列可以轻松的以迭代形式实现它。不过不同于BFS的是，层序遍历需要在队列中记住每一层的分割点，而BFS不关心层数只要遍历到指定元素就行了。为了记住这个分割点，我们在进入下一层之前先记下这一层的元素个数N（其实就是当前queue的大小），然后只遍历N个节点（展开下一层节点的同时queue中会新加入很多下下一层的节点）。遍历完N个节点后记录新的层数，再进入下一层。对于II，返回的层是逆序的，我们只要在结果中，每次把下面新一层加到当前这层的前面就行了
+
+public class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new LinkedList<List<Integer>>();
+        Queue<TreeNode> q = new LinkedList<TreeNode>();
+        if(root != null) q.offer(root);
+        while(!q.isEmpty()){
+            int size = q.size();
+            List<Integer> level = new LinkedList<Integer>();
+            //控制当前层的遍历次数
+            for(int i =0; i < size; i++){
+                TreeNode curr = q.poll();
+                level.add(curr.val);
+                if(curr.left!=null) q.offer(curr.left);
+                if(curr.right!=null) q.offer(curr.right);
+            }
+            //对于II， 我们要逆序加入
+            res.add(0, level)
+        }
+        return res;
+    }
+}
