@@ -1,0 +1,72 @@
+110. Balanced Binary Tree
+Given a binary tree, determine if it is height-balanced.
+
+For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+
+深度优先搜索
+复杂度
+时间 O(N) 空间 O(h) 递归栈空间
+
+思路
+非平衡的条件是有两个叶子节点的深度相差大于1，最直接的想法就是把左子树和右子树的高度都算出来，如果相差大于1则说明不是平衡的。在递归中，从叶子结点开始一层层返回高度，叶子结点是1。我们返回-1代表非平衡，返回自然数代表有效的子树高度。
+
+
+/**
+2
+ * Definition for a binary tree node.
+3
+ * public class TreeNode {
+4
+ *     int val;
+5
+ *     TreeNode left;
+6
+ *     TreeNode right;
+7
+ *     TreeNode(int x) { val = x; }
+8
+ * }
+9
+ */
+10
+public class Solution {
+11
+    public boolean isBalanced(TreeNode root) {
+12
+        if(root==null){
+13
+            return true;
+14
+        }
+15
+        int left=helper(root.left);
+16
+        int right=helper(root.right);
+17
+        return left!=-1 && right!=-1 && Math.abs(left-right)<=1;
+18
+    }
+19
+    public int helper(TreeNode root){
+20
+        if(root==null){
+21
+            return 0;
+22
+        }
+23
+        int left=helper(root.left);
+24
+        int right=helper(root.right);
+25
+        if(left==-1 || right== -1 || Math.abs(left-right)>1){
+26
+            return -1;
+27
+        }
+28
+        return Math.max(left, right)+1;
+29
+    }
+30
+}
