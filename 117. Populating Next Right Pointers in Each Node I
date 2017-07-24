@@ -1,0 +1,60 @@
+117. Populating Next Right Pointers in Each Node II
+Follow up for problem "Populating Next Right Pointers in Each Node".
+
+What if the given tree could be any binary tree? Would your previous solution still work?
+
+Note:
+
+You may only use constant extra space.
+For example,
+Given the following binary tree,
+         1
+       /  \
+      2    3
+     / \    \
+    4   5    7
+After calling your function, the tree should look like:
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \    \
+    4-> 5 -> 7 -> NULL
+
+     这道题跟I的区别就是binary tree不是完全二叉树。
+ 所以root.right.next就不一定等于root.next.left。
+ 所以，目标就是先确定好root的右孩子的第一个有效next连接点，然后再处理左孩子。
+
+public void connect(TreeLinkNode root) {  
+ 2         if (root == null) 
+ 3             return;  
+ 4   
+ 5         TreeLinkNode p = root.next;  
+ 6         /*
+ 7         因此，这道题目首要是找到右孩子的第一个有效的next链接节点，然后再处理左孩子。然后依次递归处理右孩子，左孩子
+ 8         */
+ 9         while (p != null) {  
+10             if (p.left != null) {  
+11                 p = p.left;  
+12                 break;  
+13             }  
+14             if (p.right != null) {  
+15                 p = p.right;  
+16                 break;  
+17             }  
+18             p = p.next;  
+19         }  
+20   
+21         if (root.right != null) {  
+22             root.right.next = p;  
+23         }  
+24   
+25         if (root.left != null) {
+26             if(root.right!=null)
+27                 root.left.next = root.right;
+28             else
+29                 root.left.next = p;
+30         }  
+31   
+32         connect(root.right);
+33         connect(root.left);
+34     } 
