@@ -1,0 +1,57 @@
+136. Single Number
+
+Given an array of integers, every element appears twice except for one. Find that single one.
+
+Note:
+Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+
+
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+我们可以利用异或的特性。一个数异或0，得到这个数本身，一个数异或本身，得到0。所以我们把所有数异或一遍，出现两次的数就变成0，一次的数就是本身，留下来了。
+
+代码
+public class Solution {
+    public int singleNumber(int[] nums) {
+        int res = 0;
+        for(int i = 0 ; i < nums.length; i++){
+            res ^= nums[i];
+        }
+        return res;
+    }
+}
+
+这道题运用位运算的异或。异或是相同为0，不同为1。所以对所有数进行异或，得出的那个数就是single number。初始时先让一个数与0异或，然后再对剩下读数挨个进行异或。
+
+这里运用到异或的性质：对于任何数x，都有x^x=0，x^0=x
+
+代码如下：
+
+复制代码
+1     public int singleNumber(int[] A) {
+2         int result = 0;
+3         for(int i = 0; i<A.length;i++){
+4             result = result^A[i];
+5         }
+6         return result;
+7     }
+复制代码
+ 同时异或还有性质：
+
+ 交换律 A XOR B = B XOR A
+
+ 结合律 A XOR B XOR C = A XOR (B XOR C) = (A XOR B) XOR C
+
+ 自反性 A XOR B XOR B = A XOR 0 = A
+
+所以对于这个数组来说，因为只有一个数字是single的，所以数组可以表示为 a a b b c c d d e。 那么利用上述规律可以异或结果为 0 0 0 0 e。这样写的代码为：
+
+复制代码
+1 public static int singleNumber(int[] A) {
+2     for (int i = 1; i < A.length; i++) {
+3         A[i] ^= A[i-1];
+4     }
+5     return A[A.length-1];
+6 }

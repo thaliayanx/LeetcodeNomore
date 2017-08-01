@@ -1,0 +1,61 @@
+131. Palindrome Partitioning
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+[
+  ["aa","b"],
+  ["a","a","b"]
+]
+
+深度优先搜素
+复杂度
+时间 O(N^2) 空间 O(N)
+
+思路
+因为我们要返回所有可能的分割组合，我们必须要检查所有的可能性，一般来说这就要使用DFS，由于要返回路径，仍然是典型的做法：递归时加入一个临时列表，先加入元素，搜索完再去掉该元素。对每一种可能性都调用isPalindrome函数来判断。
+
+代码
+public class Solution {
+    
+    List<List<String>> res;
+    public List<List<String>> partition(String s) {
+        res = new LinkedList<List<String>>();
+        List<String> tmp = new LinkedList<String>();
+        helper(s, 0, tmp);
+        return res;
+    }
+    
+    private void helper(String s, int start, List<String> tmp){
+        if(start >= s.length()){
+            List<String> list = new LinkedList<String>(tmp);
+            res.add(list);
+            return;
+        }
+        // 搜索可能的字串，如果是回文就继续搜索
+        for(int i = start; i < s.length(); i++){
+            String sub = s.substring(start, i+1);
+            if(isPalindrome(sub)){
+                tmp.add(sub);
+                helper(s, i+1, tmp);
+                tmp.remove(tmp.size()-1);
+            }
+        }
+    }
+    
+    private boolean isPalindrome(String s){
+        int i = 0, j = s.length() - 1;
+        while(i<j){
+            if(s.charAt(i)==s.charAt(j)){
+                i++;
+                j--;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+}

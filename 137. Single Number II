@@ -1,0 +1,30 @@
+137. Single Number II
+Given an array of integers, every element appears three times except for one, which appears exactly once. Find that single one.
+
+Note:
+Your algorithm should have a linear runtime complexity. Could you implement it without using extra memory?
+
+复杂度
+时间 O(N) 空间 O(1)
+
+思路
+我们用三个变量分别记录出现一次的数，出现两次的数和出现三次的数。出现一次ones的数计算方法和I是一样的，异或就行了。出现两次twos的条件是ones中有该数，而该数又出现了。出现三次threes的条件是即出现在ones里又出现twos里。如果一个数出现了3次，我们就要把ones和twos中清除该数。
+
+代码
+public class Solution {
+    public int singleNumber(int[] nums) {
+        int ones = 0, twos = 0, threes = 0;
+        for(int i = 0; i < nums.length; i++){
+            // 出现两次twos的条件是ones中有该数，而该数又出现了
+            twos |= ones & nums[i];
+            // 出现一次ones的数计算方法和I是一样的，异或就行了
+            ones ^= nums[i];
+            // 出现三次threes的条件是即出现在ones里又出现twos里
+            threes = ones & twos;
+            // 将出现三次的数从ones和twos中去除
+            twos &= ~threes;
+            ones &= ~threes;
+        }
+        return ones;
+    }
+}
