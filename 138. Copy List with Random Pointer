@@ -1,0 +1,45 @@
+138. Copy List with Random Pointer
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+Return a deep copy of the list.
+
+栈迭代
+复杂度
+时间 O(N) 空间 O(N) 如果不算新链表的空间则是O(1)
+
+思路
+由于随机指针有可能产生环路，我们不能直接沿着随机指针的方向一个一个复制。同时我们又不能沿着next指针直接复制，因为我们不知道随机指针所指向的新节点是哪个。这里有个技巧，我们把复制的表一对一的插在旧表的每个节点后面，这样在第二次遍历链表时，我们就肯定知道随机指针指向的新节点是哪个了，肯定是旧节点随即指针指向的旧节点的下一个节点。然后我们再遍历一遍，把新旧两个链表分割开来就行了。
+
+public class Solution {
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if(head==null) return null;
+        RandomListNode n1 = head;
+        RandomListNode n2;
+        // 生成新节点并接在旧节点后面
+        while(n1!=null){
+            n2 = new RandomListNode(n1.label);
+            n2.next = n1.next;
+            n1.next = n2;
+            n1 = n1.next.next;
+        }
+        // 给新节点的random字段赋值
+        n1 = head;
+        n2 = n1.next;
+        while(n1!=null){
+            n2.random = n1.random != null ? n1.random.next : null;
+            n1 = n1.next.next;
+            n2 = n1 != null ? n2.next.next : null;
+        }
+        n1 = head;
+        n2 = n1.next;
+        RandomListNode res = n2;
+        // 将新旧节点分开
+        while(n1!=null){
+            n1.next = n1.next.next;
+            n2.next = n2.next != null ? n2.next.next : null;
+            n1 = n1.next;
+            n2 = n2.next;
+        }
+        return res;
+    }
+}

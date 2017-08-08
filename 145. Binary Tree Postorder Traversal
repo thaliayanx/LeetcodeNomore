@@ -1,0 +1,38 @@
+145. Binary Tree Postorder Traversal
+Given a binary tree, return the postorder traversal of its nodes' values.
+
+For example:
+Given binary tree {1,#,2,3},
+   1
+    \
+     2
+    /
+   3
+return [3,2,1].
+
+Note: Recursive solution is trivial, could you do it iteratively?
+
+反向法
+复杂度
+时间 O(b^(h+1)-1) 空间 O(h) 递归栈空间 对于二叉树b=2
+
+思路
+还有一种更巧妙的方法，因为后序遍历的顺序是left - right - root，虽然我们不方便直接得到这个顺序，但是它的逆序还是很好得到的，我们可以用root - right - left的顺序遍历树，然后反向添加结果就行了。
+
+代码
+public class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        Stack<TreeNode> stk = new Stack<TreeNode>();
+        if(root != null) stk.push(root);
+        LinkedList<Integer> res = new LinkedList<Integer>();
+        while(!stk.isEmpty()){
+            TreeNode curr = stk.pop();
+            // 先添加左后添加右，就是先访问右后访问左
+            if(curr.left != null) stk.push(curr.left);
+            if(curr.right != null) stk.push(curr.right);
+            // 反向添加结果，每次加到最前面
+            res.offerFirst(curr.val);
+        }
+        return res;
+    }
+}

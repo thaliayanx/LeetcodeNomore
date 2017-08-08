@@ -1,0 +1,70 @@
+143. Reorder List
+Given a singly linked list L: L0?L1?…?Ln-1?Ln,
+reorder it to: L0?Ln?L1?Ln-1?L2?Ln-2?…
+
+You must do this in-place without altering the nodes' values.
+
+For example,
+Given {1,2,3,4}, reorder it to {1,4,2,3}.
+
+逆序合并法
+复杂度
+时间 O(N) 空间 O(1)
+
+思路
+理想情况下，如果能一个指针从后往前走，一个指针从前往后走，然后一个一个合并就行了。但是单链表并没有从后往前走的能力，难道要改造成双链表吗？其实不用，我们只要把后半部分反转一下，变成两个链表就行了。要找到后半部分的起点，就是用快慢指针。从头开始，快指针走两步，慢指针走一步，这样快指针到头的时候慢指针就是中间了。不过该题我们不能直接拿到中间，而是要拿到中间的前一个节点，这样才能把第一个子链表的末尾置为空，这里的技巧就是快慢指针循环的条件是fast.next != null && fast.next.next != null。
+
+注意
+因为不能有额外空间，我们最好用迭代的方法反转链表。
+
+代码
+public class Solution {
+    public void reorderList(ListNode head) {
+        if(head == null) return;
+        ListNode slow = head;
+        ListNode fast = head;
+        // 找到中点的前一个节点
+        while(fast.next != null && fast.next.next != null){
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        // 反转中点及之后的链表
+        ListNode head2 = reverseList(slow.next);
+        // 将前半部分链表的末尾置空
+        slow.next = null;
+        // 找到两个子链表的头，准备开始合并
+        ListNode head1 = head;
+        ListNode dummyHead = new ListNode(0);
+        ListNode curr = dummyHead;
+        // 当子链表都不为空的时候依次合并
+        while(head2 != null && head1 != null){
+            curr.next = head1;
+            head1 = head1.next;
+            curr = curr.next;
+            curr.next = head2;
+            head2 = head2.next;
+            curr = curr.next;
+        }
+        // 当其中一个子链表为空时，把另一个链表剩下的那个节点加上，因为可能一共有奇数个节点
+        curr.next = head2 != null ? head2 : null;
+        curr.next = head1 != null ? head1 : null;
+        head = dummyHead.next;
+    }
+    
+    // 迭代反转链表
+    private ListNode reverseList(ListNode head){
+        if(head == null || head.next == null){
+            return head;
+        }
+        ListNode p1 = head;
+        ListNode p2 = head.next;
+        while(p2 != null){
+            ListNode tmp = p2.next;
+            p2.next = p1;
+            p1 = p2;
+            p2 = tmp;
+        }
+        head.next = null;
+        return p1;
+    }
+}
