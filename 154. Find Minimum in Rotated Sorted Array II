@@ -1,0 +1,44 @@
+154. Find Minimum in Rotated Sorted Array II
+Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+
+(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+
+Find the minimum element.
+
+The array may contain duplicates.
+
+二分递归法
+复杂度
+时间 O(N) 空间 O(N) 递归栈空间
+
+思路
+如果有重复的话，一旦中间和右边是相等的，就无法确定是否在左半边还是右半边，这时候我们必须对两边都递归求解。如果nums[max]大于等于nums[mid]，则右边有可能有，如果nums[max]小于等于nums[mid]，则左边有可能有。
+
+注意
+要先将左和右的最小值初始化最大整数，然后求解后，最后返回其中较小的那个
+
+代码
+public class Solution {
+    public int findMin(int[] nums) {
+        return findMin(nums, 0, nums.length - 1);
+    }
+    
+    public int findMin(int[] nums, int min , int max){
+        if(min == max){
+            return nums[min];
+        }
+        int mid = (min + max) / 2;
+        // 先将右边和左边可能找到的值都初始化为最大
+        int right = Integer.MAX_VALUE, left = Integer.MAX_VALUE;
+        // 找出右边可能的旋转点
+        if(nums[mid] >= nums[max]){
+            right = findMin(nums, mid + 1, max);
+        }
+        // 找出左边可能的旋转点
+        if (nums[mid] <= nums[max]) {
+            left = findMin(nums,min, mid);
+        }
+        // 返回两个中更小的
+        return Math.min(right,left);
+    }
+}

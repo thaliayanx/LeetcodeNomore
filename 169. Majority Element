@@ -1,0 +1,20 @@
+169. Majority Element
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+
+You may assume that the array is non-empty and the majority element always exist in the array.
+
+排序法
+复杂度
+时间 O(NlogN) 空间 O(1)
+
+思路
+将数组排序，这时候数组最中间的数肯定是众数。
+
+代码
+public class Solution {
+    public int majorityElement(int[] nums) {
+        Arrays.sort(nums);
+        return nums[nums.length / 2];
+    }
+}
+

@@ -1,0 +1,30 @@
+151. Reverse Words in a String
+Given an input string, reverse the string word by word.
+
+For example,
+Given s = "the sky is blue",
+return "blue is sky the".
+
+使用API
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+将单词根据空格split开来存入一个字符串数组，然后将该数组反转即可。
+
+注意
+先用trim()将前后无用的空格去掉
+用正则表达式" +"来匹配一个或多个空格
+代码
+public class Solution {
+    public String reverseWords(String s) {
+        String[] words = s.trim().split(" +");
+        int len = words.length;
+        StringBuilder result = new StringBuilder();
+        for(int i = len -1; i>=0;i--){
+            result.append(words[i]);
+            if(i!=0) result.append(" ");
+        }
+        return result.toString();
+    }
+}

@@ -1,0 +1,66 @@
+166. Fraction to Recurring Decimal
+Given two integers representing the numerator and denominator of a fraction, return the fraction in string format.
+
+If the fractional part is repeating, enclose the repeating part in parentheses.
+
+For example,
+
+Given numerator = 1, denominator = 2, return "0.5".
+Given numerator = 2, denominator = 1, return "2".
+Given numerator = 2, denominator = 3, return "0.(6)".
+
+哈希表法
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+整数部分很好处理，只要注意正负号的区分就行了，但是如何处理小数部分呢。如果只是简单的除法，那我们每次把余数乘以10，再除以被除数就可以得到当前位的小数了，得到新的余数，直到余数为0。难点在于，对于无尽循环小数，我们一直这么做永远也不能让余数变为0。这里我们可以用一个哈希表记录每次的余数，如果余数出现重复的时候，说明就产生循环了。为了能找出小数中循环的部分，我们在用哈希表时，还要把每个余数对应的小数位记录下来，这样子我们一旦遇到重复，就知道是从哪里开始循环的。
+
+注意
+如果输入的被除数很大，那么余数乘以10有可能溢出，所以我们用long来保存numerator和denominator。
+
+public class Solution {
+    public String fractionToDecimal(int numerator, int denominator) {
+        long num = numerator;
+        long den = denominator;
+        if(num == 0 || den == 0){
+            return "0";
+        }
+        // 判断结果正负号
+        boolean negative = (num > 0 && den < 0) || (num < 0 && den > 0);
+        num = Math.abs(num);
+        den = Math.abs(den);
+        // 得到整数部分
+        String integ = (negative ? "-" : "") + String.valueOf(num / den);
+        // 如果存在小数部分
+        if(num % den != 0){
+            num = num % den;
+            HashMap<Long, Integer> map = new HashMap<Long, Integer>();
+            int pos = 0;
+            map.put(num, pos);
+            StringBuilder frac = new StringBuilder();
+            // 计算小数部分
+            while(num != 0){
+                // 先把算出的小数加上，再判断余数是否重复，如果余数重复的话，小数会从下一个开始重复
+                num = num * 10;
+                frac.append(num / den);
+                num = num % den;
+                // 如果该余数之前出现过，说明有循环，上次出现的位置到当前位置就是循环的部分
+                if(map.containsKey(num)){
+                    // 将非循环部分和循环部分分开
+                    String pre = frac.substring(0, map.get(num));
+                    String loop = frac.substring(map.get(num));
+                    // 返回有循环的结果
+                    return integ + "." + pre + "(" + loop + ")";
+                }
+                pos++;
+                // 记录下当前余数和他对应小数的位置
+                map.put(num, pos);
+            }
+            // 返回无循环有小数的结果
+            return integ + "." + frac.toString();
+        }
+        // 返回无小数的结果
+        return integ;
+    }
+}
