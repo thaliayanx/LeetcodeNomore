@@ -1,0 +1,49 @@
+173. Binary Search Tree Iterator
+Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.
+
+Calling next() will return the next smallest number in the BST.
+
+Note: next() and hasNext() should run in average O(1) time and uses O(h) memory, where h is the height of the tree.
+
+栈法
+复杂度
+时间 O(N) 空间 O(1)
+
+思路
+这道题和Inorder Successor in BST很像，区别在于Successor那题是给定节点求下一个，而这题是要做一个迭代器，返回当前指向的值，其实就是求上次返回的节点的下一个，本质是一样的。题目要求最多只能用O(H)的空间，所以思路也和那题一样，用一个Stack记录从根节点到当前节点的路径。next的时候就返回Stack最上面的元素。不过拿出最上面的元素后，我们还要看一下这个被返回的元素是否有右节点，如果有的话，就把它的右节点及右节点的所有左边节点都压入栈中。另外，初始化栈时，我们要找到最左边的节点，也就是中序遍历的第一个节点，并把根到第一个节点的路径都压入栈。
+
+这题还可以结合Binary Tree Inorder Traverse的迭代做法一起理解。他们的共同点都是用一个栈，将最左边的节点都压入栈。
+
+public class BSTIterator {
+    
+    Stack<TreeNode> stk;
+
+    public BSTIterator(TreeNode root) {
+        stk = new Stack<TreeNode>();
+        // 先找到第一个节点，并把路径入栈
+        while(root != null){
+            stk.push(root);
+            root = root.left;
+        }
+    }
+
+    public boolean hasNext() {
+        // 栈为空时不再有下一个
+        return !stk.isEmpty();
+    }
+
+    public int next() {
+        // 栈顶是待返回元素
+        TreeNode curr = stk.pop();
+        int res = curr.val;
+        // 如果该元素有右节点，把它的右节点及右节点的所有左边节点都压入栈中
+        if(curr.right != null){
+            curr = curr.right;
+            while(curr != null){
+                stk.push(curr);
+                curr = curr.left;
+            }
+        }
+        return res;
+    }
+}

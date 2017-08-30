@@ -1,0 +1,90 @@
+211. Add and Search Word - Data structure design
+Design a data structure that supports the following two operations:
+
+void addWord(word)
+bool search(word)
+search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+For example:
+
+addWord("bad")
+addWord("dad")
+addWord("mad")
+search("pad") -> false
+search("bad") -> true
+search(".ad") -> true
+search("b..") -> true
+Note:
+You may assume that all words are consist of lowercase letters a-z.
+
+先建一个Trie, 然后搜索即可
+
+class TrieNode{
+    HashMap<Character, TrieNode> children=new HashMap<Character, TrieNode>();
+    boolean isLeaf=false;
+    char c;
+    public TrieNode(char c){
+        this.c=c;
+    }
+    public TrieNode(){};
+}
+public class WordDictionary {
+
+    /** Initialize your data structure here. */
+    TrieNode root;
+    public WordDictionary() {
+        root=new TrieNode();
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        HashMap<Character, TrieNode> children=root.children;
+        for(int i=0;i<word.length();i++){
+            TrieNode tmp;
+            char c=word.charAt(i);
+            if(children.containsKey(c)){
+                tmp=children.get(c);
+            }
+            else{
+                tmp=new TrieNode();
+                children.put(c, tmp);  
+            }
+            children=tmp.children;
+            if(i==word.length()-1) tmp.isLeaf=true;
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return searchNode(word, root);
+    }
+    
+    public boolean searchNode(String word, TrieNode root){
+        HashMap<Character, TrieNode> children=root.children;
+        if(root==null) return false;
+        if(word.length()==0) return root.isLeaf;
+        TrieNode tmp=null;
+        char c=word.charAt(0);
+        if(c=='.'){
+            for(char key:children.keySet()){
+                if(searchNode(word.substring(1),children.get(key))) return true;
+            }
+            return false;
+        }
+        else if(!children.containsKey(c)){
+            return false;
+        }
+        else{
+            tmp=children.get(c);
+            return searchNode(word.substring(1), tmp);
+        }
+        
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */

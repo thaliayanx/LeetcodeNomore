@@ -1,0 +1,50 @@
+179. Largest Number
+
+Given a list of non negative integers, arrange them such that they form the largest number.
+
+For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330.
+
+Note: The result may be very large, so you need to return a string instead of an integer.
+
+拼接比较法
+复杂度
+时间 O(NlogN) 空间 O(N)
+
+思路
+要拼成最大数，我们只要让较大的数排在前面，较小的数排在后面就行。然而如何对原数组排序呢？当比较一位数时，直接比较大小就行了，但对于多位数呢？
+
+从第一位向后比较，如果有一位更大，则该数更大，如9大于15，24大于23。
+如果某个数的前半部分和另一个数完全相同，则看该数剩下的那部分和另一个数的大小关系，如2332和23比较时，2332是大于23的，因为32大于23。
+不过如果细分各种情况，会弄得非常复杂，这里有个技巧，就是我们把两个数拼在一起，然后再把这两个数换个顺序再拼在一起，这时候就可以直接比较了。比如2332和23，变成233223和232332两个数，这时候那个数更大，就说明这个数前半部分的那个数是更大的，这里是2332。
+注意
+如果排序后第一个数是0，则直接返回0，因为后面的数只有可能是0了。
+
+代码
+public class Solution {
+    public String largestNumber(int[] nums) {
+        Integer[] ints = new Integer[nums.length];
+        // 将其放入Integer数组方便排序
+        for(int i = 0; i < nums.length; i++){
+            ints[i] = nums[i];
+        }
+        // 排序的方法是前后相拼再后前相拼，比较大小
+        Arrays.sort(ints, new Comparator<Integer>(){
+            public int compare(Integer n1, Integer n2){
+                System.out.println(n1 +":"+n2);
+                String str1 = String.valueOf(n1);
+                String str2 = String.valueOf(n2);
+                return (str2 + str1).compareTo(str1 + str2);
+            }
+        });
+        // 如果第一个数是0，则直接返回0
+        if(ints[0] == 0){
+            return "0";
+        }
+        StringBuilder sb = new StringBuilder();
+        // 将数从大到小拼起来就行了
+        for(int i = 0; i < nums.length; i++){
+            sb.append(ints[i]);
+        }
+        return sb.toString();
+    }
+}

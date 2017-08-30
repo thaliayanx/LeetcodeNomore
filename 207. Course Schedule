@@ -1,0 +1,102 @@
+207. Course Schedule
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+For example:
+
+2, [[1,0]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
+
+2, [[1,0],[0,1]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Note:
+The input prerequisites is a graph represented by a list of edges, not adjacency matrices. Read more about how a graph is represented.
+You may assume that there are no duplicate edges in the input prerequisites.
+click to show more hints.
+
+Hints:
+This problem is equivalent to finding if a cycle exists in a directed graph. If a cycle exists, no topological ordering exists and therefore it will be impossible to take all courses.
+Topological Sort via DFS - A great video tutorial (21 minutes) on Coursera explaining the basic concepts of Topological Sort.
+Topological sort could also be done via BFS.
+
+一、什么是拓扑排序
+
+在图论中，拓扑排序（Topological Sorting）是一个有向无环图（DAG, Directed Acyclic Graph）的所有顶点的线性序列。且该序列必须满足下面两个条件：
+
+每个顶点出现且只出现一次。
+若存在一条从顶点 A 到顶点 B 的路径，那么在序列中顶点 A 出现在顶点 B 的前面。
+有向无环图（DAG）才有拓扑排序，非DAG图没有拓扑排序一说。
+
+例如，下面这个图：
+
+
+
+它是一个 DAG 图，那么如何写出它的拓扑排序呢？这里说一种比较常用的方法：
+
+从 DAG 图中选择一个 没有前驱（即入度为0）的顶点并输出。
+从图中删除该顶点和所有以它为起点的有向边。
+重复 1 和 2 直到当前的 DAG 图为空或当前图中不存在无前驱的顶点为止。后一种情况说明有向图中必然存在环。
+
+
+于是，得到拓扑排序后的结果是 { 1, 2, 4, 3, 5 }。
+
+通常，一个有向无环图可以有一个或多个拓扑排序序列。
+
+
+
+二、拓扑排序的应用
+
+拓扑排序通常用来“排序”具有依赖关系的任务。
+
+比如，如果用一个DAG图来表示一个工程，其中每个顶点表示工程中的一个任务，用有向边 表示在做任务 B 之前必须先完成任务 A。故在这个工程中，任意两个任务要么具有确定的先后关系，要么是没有关系，绝对不存在互相矛盾的关系（即环路）。
+
+拓扑排序
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+先修课问题本质上是一个有向图，如果这个图无环，我们可以根据拓扑排序遍历到所有节点，如果有环则拓扑排序无法完成，遍历到的节点将少于总节点数，因为有的节点是孤岛。这题我们先根据边的关系，建一个图，并计算每个节点的入度，这里用的是数组来建图。然后从入度为0的节点，也就是入口开始广度优先搜索，按照拓扑排序的顺序遍历，最后看遍历过的节点数和总节点数的关系就行了。
+
+public class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        ArrayList[] graph = new ArrayList[numCourses];
+        int[] indegree = new int[numCourses];
+        // 先初始化图，每个赋一个空列表
+        for(int i = 0; i < numCourses; i++){
+            graph[i] = new ArrayList<Integer>();
+        }
+        // 根据边建立图，并计算入度
+        for(int i = 0; i < prerequisites.length; i++){
+            graph[prerequisites[i][1]].add(prerequisites[i][0]);
+            indegree[prerequisites[i][0]]++;
+        }
+        // 找到有向图的入口
+        Queue<Integer> queue = new LinkedList<Integer>();
+        for(int i = 0; i < indegree.length; i++){
+            if(indegree[i] == 0){
+                queue.add(i);
+            }
+        }
+        // 按照拓扑排序的顺序，进行广度优先搜索
+        int cnt = 0;
+        while(!queue.isEmpty()){
+            Integer curr = queue.poll();
+            cnt++;
+            ArrayList<Integer> nexts = graph[curr];
+            for(int i = 0; i < nexts.size(); i++){
+                int next = nexts.get(i);
+                indegree[next]--;
+                if(indegree[next] == 0){
+                    queue.offer(next); 
+                }
+            }
+        }
+        return cnt == numCourses;
+    }
+}
+
+这道课程清单的问题对于我们学生来说应该不陌生，因为我们在选课的时候经常会遇到想选某一门课程，发现选它之前必须先上了哪些课程，这道题给了很多提示，第一条就告诉我们了这道题的本质就是在有向图中检测环。 LeetCode中关于图的题很少，有向图的仅此一道，还有一道关于无向图的题是 Clone Graph 无向图的复制。个人认为图这种数据结构相比于树啊，链表啊什么的要更为复杂一些，尤其是有向图，很麻烦。第二条提示是在讲如何来表示一个有向图，可以用边来表示，边是由两个端点组成的，用两个点来表示边。第三第四条提示揭示了此题有两种解法，DFS和BFS都可以解此题。我们先来看BFS的解法，我们定义二维数组graph来表示这个有向图，一位数组in来表示每个顶点的入度。我们开始先根据输入来建立这个有向图，并将入度数组也初始化好。然后我们定义一个queue变量，将所有入度为0的点放入队列中，然后开始遍历队列，从graph里遍历其连接的点，每到达一个新节点，将其入度减一，如果此时该点入度为0，则放入队列末尾。直到遍历完队列中所有的值，若此时还有节点的入度不为0，则说明环存在，返回false，反之则返回true

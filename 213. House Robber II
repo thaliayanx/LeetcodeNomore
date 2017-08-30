@@ -1,0 +1,39 @@
+213. House Robber II
+Note: This is an extension of House Robber.
+
+After robbing those houses on that street, the thief has found himself a new place for his thievery so that he will not get too much attention. This time, all houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, the security system for these houses remain the same as for those in the previous street.
+
+Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+
+动态规划
+复杂度
+时间 O(N) 空间 O(1)
+
+思路
+和I一样，但是这里多了一条规则，抽象出来就是：抢劫第一个屋子就不能抢劫最后一个屋子，抢劫最后一个屋子就不能抢劫第一个屋子。所以我们分别算出这两个条件下的最大收益，然后取更大的就行了。可以复用I的代码。
+
+代码
+public class Solution {
+    
+    public int rob(int[] nums) {
+        // 求两种条件下更大的那个，用一个offset表示是哪种条件
+        return Math.max(rob(nums, 0), rob(nums, 1));
+    }
+    
+    public int rob(int[] nums, int offset) {
+        // 如果长度过小，则直接返回结果
+        if(nums.length <= 1 + offset){
+            return nums.length <= offset ? 0 : nums[0 + offset]; 
+        }
+        int a = nums[0 + offset];
+        // 如果offset是1，则从下标为1的元素开始计算，所以要比较nums[1]和nums[2]
+        int b = Math.max(nums[0 + offset], nums[1 + offset]);
+        // 对于不抢劫最后一个房子的情况，i要小于nums.length - 1
+        for(int i = 2 + offset; i < nums.length - 1 + offset; i++){
+            int tmp = b;
+            b = Math.max(a + nums[i], b);
+            a = tmp;
+        }
+        return b;
+    }
+}

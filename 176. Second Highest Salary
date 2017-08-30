@@ -1,0 +1,40 @@
+176. Second Highest Salary
+Write a SQL query to get the second highest salary from the Employee table.
+
++----+--------+
+| Id | Salary |
++----+--------+
+| 1  | 100    |
+| 2  | 200    |
+| 3  | 300    |
++----+--------+
+For example, given the above Employee table, the query should return 200 as the second highest salary. If there is no second highest salary, then the query should return null.
+
++---------------------+
+| SecondHighestSalary |
++---------------------+
+| 200                 |
++---------------------+
+依然是 Ranking 类问题。可以想到这么一个方法，对 DISTINCT Salary 进行排序加上 LIMIT 即可得到排名第 2 的行。但是题目要求若没有第 2 名的行，需要返回 NULL，而这个答案是不返回任何行，所以还需要加工。第二步，我们多加一层 SELECT 并添加一个 IF 条件判断。如果结果有 0 行则返回 NULL，有 1 行返回正常结果。由于可以预期上一步结果只有一个，所以这里可以用 COUNT 而不用 GROUP BY。
+
+SELECT
+	IF(COUNT(Salary)>=1, Salary, NULL) AS SecondHighestSalary
+FROM
+	(SELECT DISTINCT 
+		Salary
+	 FROM
+	 	Employee
+	 ORDER BY Salary DESC
+	 LIMIT 1,1)tmp;
+排名第 2 可以看做是除了 MAX 之外的 MAX，可以得到这两种类似的解法。由于 MAX 函数可以返回 NULL 结果，就不用在进一步加工结果。
+SELECT 
+	MAX(Salary) 
+AS 
+	SecondHighestSalary 
+FROM 
+	Employee 
+WHERE 
+	Salary<(SELECT 
+				MAX(Salary) 
+			FROM 
+				Employee);

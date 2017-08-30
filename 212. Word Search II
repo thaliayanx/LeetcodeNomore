@@ -1,0 +1,140 @@
+212. Word Search II
+Given a 2D board and a list of words from the dictionary, find all words in the board.
+
+Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+
+For example,
+Given words = ["oath","pea","eat","rain"] and board =
+
+[
+  ['o','a','a','n'],
+  ['e','t','a','e'],
+  ['i','h','k','r'],
+  ['i','f','l','v']
+]
+Return ["eat","oath"].
+Note:
+You may assume that all inputs are consist of lowercase letters a-z.
+
+click to show hint.
+
+You would need to optimize your backtracking to pass the larger test. Could you stop backtracking earlier?
+
+If the current candidate does not exist in all words' prefix, you could stop backtracking immediately. What kind of data structure could answer such query efficiently? Does a hash table work? Why or why not? How about a Trie? If you would like to learn how to implement a basic trie, please work on this problem: Implement Trie (Prefix Tree) first.
+
+字典树
+复杂度
+时间 O(N^2logN) 空间 O(N)
+
+思路
+如果还像一中那样，对每个词进行一遍Word Search I，那复杂度就太高了。我们可以先用待查单词建立一个字典树，这样我们在从矩阵中某个点开始深度优先搜索时，可以直接用字典树判断当前组成的字符串是否是某个单词的前缀。如果是某个单词的前缀，再继续搜索下去。字典树同样也提供search接口，所以同样可以用于判断是否已经搜索到这个词了。
+
+注意
+因为结果中不能有重复，我们可以在加入结果前先判断是否已经加过该结果，也可以稍微修改一下字典树的search方法，使得每次我们搜索到一个单词时，将其isEnd的标记置为false，这样下次就不会搜索到这个词了。
+public class Solution {
+    
+    List<String> res;
+    Trie trie;
+    
+    public List<String> findWords(char[][] board, String[] words) {
+        res = new LinkedList<String>();
+        trie = new Trie();
+        // 构建字典树
+        for(String word : words){
+            trie.insert(word);
+        }
+        // 深度优先搜索
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                helper(board, String.valueOf(board[i][j]), i, j);
+            }
+        }
+        return res;
+    }
+    
+    private void helper(char[][] board, String tmp, int i, int j){
+        // 如果字典树中存在该字符串，说明找到了单词
+        if(trie.search(tmp)){
+            if(!res.contains(tmp)) res.add(tmp);
+        }
+        // 为了防止循环，将当前字母改变一下
+        board[i][j] ^= 255;
+        // 对四个方向搜索，如果当前字符串是前缀就继续搜索
+        if(j < board[0].length - 1){
+            String next = tmp + board[i][j+1];
+            if(trie.startsWith(next)) helper(board, next, i, j + 1);
+        }
+        if(i > 0){
+            String next = tmp + board[i-1][j];
+            if(trie.startsWith(next)) helper(board, next, i - 1, j);
+        }
+        if(i < board.length - 1){
+            String next = tmp + board[i+1][j];
+            if(trie.startsWith(next)) helper(board, next, i + 1, j);
+        }
+        if(j > 0){
+            String next = tmp + board[i][j-1];
+            if(trie.startsWith(next)) helper(board, next, i, j - 1);
+        }
+        board[i][j] ^= 255;
+    }
+    
+    // 字典树的节点
+    public class TrieNode {
+        Character c;
+        HashMap<Character, TrieNode> children;
+        boolean isEnd;
+        public TrieNode(char c){
+            this.c = c;
+            this.isEnd = false;
+            this.children = new HashMap<Character, TrieNode>();
+        }
+    }
+    
+    // 字典树
+    public class Trie {
+        TrieNode root;
+        
+        public Trie(){
+            this.root = new TrieNode('r');
+        }
+        
+        public void insert(String str){
+            TrieNode curr = root, next = null;
+            int idx = 0;
+            for(int i = 0; i < str.length(); i++){
+                next = curr.children.get(str.charAt(i));
+                if(next == null){
+                    next = new TrieNode(str.charAt(i));
+                }
+                if(i == str.length() - 1){
+                    next.isEnd = true;
+                }
+                curr.children.put(str.charAt(i), next);
+                curr = next;
+            }
+        }
+        
+        public boolean search(String str){
+            TrieNode res = searchNode(str);
+            return res != null && res.isEnd ? true : false;
+        }
+        
+        public boolean startsWith(String str){
+            TrieNode res = searchNode(str);
+            return res == null ? false : true;
+        }
+        
+        private TrieNode searchNode(String str){
+            TrieNode curr = root, next = null;
+            for(int i = 0; i < str.length(); i++){
+                next = curr.children.get(str.charAt(i));
+                if(next == null){
+                    return null;
+                }
+                curr = next;
+            }
+            return next;
+        }
+    }
+}
