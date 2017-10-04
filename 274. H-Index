@@ -1,0 +1,25 @@
+274. H-Index
+Given an array of citations (each citation is a non-negative integer) of a researcher, write a function to compute the researcher's h-index.
+
+According to the definition of h-index on Wikipedia: "A scientist has index h if h of his/her N papers have at least h citations each, and the other N − h papers have no more than h citations each."
+
+For example, given citations = [3, 0, 6, 1, 5], which means the researcher has 5 papers in total and each of them had received 3, 0, 6, 1, 5 citations respectively. Since the researcher has 3 papers with at least 3 citations each and the remaining two with no more than 3 citations each, his h-index is 3.
+
+Note: If there are several possible values for h, the maximum one is taken as the h-index.
+
+【思路-Java】T=O(nlogn)|M=O(1)
+论文里的 h 因子判定，题目的意思可能有点晦涩。h 因子是评判学术成就的一种重要方法，h 因子越高越好，h 因子兼顾研究学术人员的学术产出数量与学术产出质量。假设一个研究者的 h 因子为 10，则表明该研究者被引用次数大于等于 10 的文章数量也应大于等于 10。
+明白了 h 因子意思，我们看题目给定实例 citations = [3, 0, 6, 1, 5]，为什么是3呢？因为引用次数大于等于3的文章为citations = [3, 0, 6, 1, 5]，蓝颜色部分，显然判定该学者 h 因子为6或者5是不合适的。
+ 对于本思路，先将数组排序。然后对于每个引用次数，比较大于该引用次数的文章，去引用次数和文章数的最小值，即 Math.min(citations.length-i, citations[i])，并更新 level，取最大值。
+当然这题排好序之后可以用二分查找进行遍历，这样速度会更快，
+
+class Solution {
+    public int hIndex(int[] citations) {
+        Arrays.sort(citations);
+        int level=0;
+        for(int i=0;i<citations.length;i++){
+            level=Math.max(level, Math.min(citations.length-i, citations[i]));
+        }
+        return level;
+    }
+}

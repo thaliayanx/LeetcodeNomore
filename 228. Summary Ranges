@@ -1,0 +1,43 @@
+228. Summary Ranges
+Given a sorted integer array without duplicates, return the summary of its ranges.
+
+Example 1:
+Input: [0,1,2,4,5,7]
+Output: ["0->2","4->5","7"]
+Example 2:
+Input: [0,2,3,4,6,8,9]
+Output: ["0","2->4","6","8->9"]
+双层迭代法
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+外层的while循环控制每个range的起点，内层的while循环控制range之内的递增。每当遍历完一个range，就把它记录到结果中，并更新下一个range的起点。这里的技巧是，判断一个数是否是在range内的，只要nums[start + range] - nums[start] = range就行了，即值之差等于下标之差。
+
+代码
+public class Solution {
+    public List<String> summaryRanges(int[] nums) {
+        List<String> res = new LinkedList<String>();
+        if(nums.length == 0) return res;
+        StringBuilder tmp = new StringBuilder();
+        int start = 0;
+        while(start < nums.length){
+            int range = 1;
+            // 遍历当前range内的所有数
+            while(start + range < nums.length && (nums[start + range] - nums[start]) == range){
+                range++;
+            }
+            // 遍历完了当前range，将其加入结果中
+            tmp.append(nums[start]);
+            if(range > 1){
+                tmp.append("->");
+                tmp.append(nums[start+range-1]);
+            }
+            res.add(tmp.toString());
+            tmp = new StringBuilder();
+            // 更新下一个range的起点
+            start = start + range;
+        }
+        return res;
+    }
+}

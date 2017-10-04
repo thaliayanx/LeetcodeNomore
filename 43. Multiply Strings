@@ -1,0 +1,48 @@
+43. Multiply Strings
+Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2.
+
+Note:
+
+The length of both num1 and num2 is < 110.
+Both num1 and num2 contains only digits 0-9.
+Both num1 and num2 does not contain any leading zero.
+You must not use any built-in BigInteger library or convert the inputs to integer directly.
+
+模拟乘法
+复杂度
+时间 O(NM) 空间 O(N+M)
+
+思路
+这题的技巧在于复用同一个结果数组存放上次的计算结果。因为被乘数每一位数字和乘数相乘的结果是依次错开的，所以就没问题。
+
+注意
+转换回String前要先把前面的0去掉，但第一位的0不去掉
+
+class Solution {
+    public String multiply(String num1, String num2) {
+        if(num1==null||num2==null){return null;} 
+        int n1=num1.length(), n2=num2.length();
+        int n3=n1+n2;
+        int[] res=new int[n3];
+        int carry=0, i=0,j=0;
+        for(i=n1-1;i>=0;i--){
+            carry=0;
+            for(j=n2-1;j>=0;j--){
+                int product=carry+res[i+j+1]+(num1.charAt(i)-'0')*(num2.charAt(j)-'0');
+                res[i+j+1]=product%10;
+                carry=product/10;
+                
+            }
+            res[i+j+1]=carry;
+        }
+        i=0;
+        StringBuilder tmp=new StringBuilder();
+        while(res[i]==0 && i<n3-1){
+            i++;
+        }
+        for(; i<n3;i++){
+            tmp.append(res[i]);
+        }
+        return tmp.toString();
+    }
+}

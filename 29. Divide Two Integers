@@ -1,0 +1,47 @@
+29. Divide Two Integers
+Divide two integers without using multiplication, division and mod operator.
+
+If it is overflow, return MAX_INT.
+
+SOLUTION 1
+1. 基本思想是不断地减掉除数，直到为0为止。但是这样会太慢。
+
+2. 我们可以使用2分法来加速这个过程。不断对除数*2，直到它比被除数还大为止。加倍的同时，也记录下cnt，将被除数减掉加倍后的值，并且结果+cnt。
+
+因为是2倍地加大，所以速度会很快，指数级的速度。
+
+3. 另外要注意的是：最小值的越界问题。对最小的正数取abs，得到的还是它。。。 因为最小的正数的绝对值大于最大的正数（INT）
+
+public class Solution {
+    public int divide(int dividend, int divisor) {
+        if(divisor==0){
+            return Integer.MAX_VALUE;
+        }
+        if(dividend==0){
+            return 0;
+        }
+        if(divisor==-1 && dividend == Integer.MIN_VALUE){
+        return Integer.MAX_VALUE;
+        }
+        long pDividend=Math.abs((long)dividend);
+        long pDivisor=Math.abs((long)divisor);
+        int result=0;
+        while(pDividend>=pDivisor){
+            int newshift=0;
+            while(pDividend>=(pDivisor<<newshift)){
+                newshift++;
+            }
+            result+=1<<(newshift-1);
+            pDividend-=pDivisor<<(newshift-1);
+        }
+
+        if((dividend>0 && divisor>0) || (dividend<0 && divisor<0)){
+            return result;
+        }
+        else{
+            return -result;
+        }
+        
+        
+    }
+}

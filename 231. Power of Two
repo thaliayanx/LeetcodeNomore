@@ -1,0 +1,33 @@
+231. Power of Two
+Given an integer, write a function to determine if it is a power of two.
+
+减一相与法
+复杂度
+时间 O(1) 空间 O(1)
+
+思路
+对于刚所说的特性，其实我们不一定要数出几个1，实际上对于1000这种形式的二进制数，我们只要将它减1得到111，再做位与，一定是0。
+
+代码
+public class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return ((n & (n-1))==0 && n>0);
+    }
+}
+
+二进制位计数法 Count Set Bits
+复杂度
+时间 O(1) 空间 O(1)
+
+思路
+2的幂有一个特性，就是它的二进制表达中只有开头是1，后面全是0。比如4是100。所以我们只要数出有多少个1，就可以判断是不是2的幂。
+
+注意
+利用位操作解题时，要注意符号位的判断，由于2的幂一定是正数，我们需要加以判断。
+
+代码
+public class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return Integer.bitCount(n) == 1 && n > 0;
+    }
+}

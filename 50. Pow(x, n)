@@ -1,0 +1,33 @@
+50. Pow(x, n)
+Implement pow(x, n).
+
+递归法
+复杂度
+时间 O(logN) 空间 O(logN)
+
+通过一点点数学推导我们可以知道，如果n是偶数
+x^n * x^n=x^2n
+
+如果n是奇数
+x^n * x^n * x=x^2n+1
+
+根据这几条原则递归，我们就不用将x相乘n次，而只要logN次就行了
+
+注意
+在递归函数中处理n的奇偶问题，在主函数中处理n的正负问题
+
+class Solution {
+    public double myPow(double x, int n) {
+        if(n<0){
+            return 1/helper(x, n);
+        }
+        return helper(x,n);
+    }
+    public double helper(double x, int n){
+        if(n==0) return 1.0;
+        if(n==1) return x;
+        double tmp=helper(x, n/2);
+        if(n%2==0) return tmp*tmp;
+        else return tmp*tmp*x;
+    }
+}

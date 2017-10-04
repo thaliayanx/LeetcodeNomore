@@ -1,0 +1,42 @@
+79. Word Search
+Given a 2D board and a word, find if the word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+For example,
+Given board =
+
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+word = "ABCCED", -> returns true,
+word = "SEE", -> returns true,
+word = "ABCB", -> returns false.
+
+这道题目的总体思路算是比较清晰，使用双重循环迭代给出的matrix的每一个元素，在遇到每个元素的时候检测从当前这个元素向四个方向出发的单词是不是存在。根据上面的思路我们将检测从当前这个元素出发四个方向的单词是不是存在这一过程写成另外一个函数，并且让它在第一步的函数中被调用。
+在matrix中从某个元素开始，寻找单词是否存在的路径的时候，我们需要将已经访问过的元素标记为不能访问，这里可以使用另外一个与matrix一样大小的boolean matrix，但是用这种方法的话消耗的空间太多，这里我们使用了另外一个更加有技巧性的方法，就是Bit Mask。256的二进制表示是11111111，所以将当前元素 XOR 256会得到将当前的元素遮盖起来(即得到一个非字母字符的表示)，注意在搜索过后，需要将被遮盖的元素重新恢复过来，从而不影响下一次的重新搜索，这时候只要再进行一次 XOR 256即可。
+
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        if(board==null||board.length==0||board[0].length==0) return false;
+        char[] tmp=word.toCharArray();
+        for(int i=0;i<board.length;i++){
+            for(int j=0;j<board[0].length;j++){
+                if(helper(board, tmp,i,j,0)) return true;
+            }
+        }
+        return false;
+    }
+    public boolean helper(char[][] board, char[] tmp, int i, int j, int index){
+        if(index==tmp.length) return true;
+        if(i<0||j<0||i==board.length||j==board[i].length) return false;
+        
+        if(board[i][j]!=tmp[index]) return false;
+        board[i][j]^=256;
+        boolean exist=helper(board, tmp, i, j+1, index+1 ) || helper(board, tmp, i, j-1, index+1 ) || helper(board, tmp, i+1, j, index+1 )|| helper(board, tmp, i-1, j, index+1 );
+        board[i][j]^=256;
+        return exist;
+    }
+}

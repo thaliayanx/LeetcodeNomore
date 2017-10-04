@@ -1,0 +1,40 @@
+133. Clone Graph
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+广度优先搜索，同时用一个哈希表，将新旧节点映射起来。这样我们第一次遍历到的节点，我们会新建一个节点并映射到哈希表中。当以后再遍历到这个节点时，我们可以直接用哈希表取出它对应的新节点。我们只要保证，对于第一次遇到的图节点，我们都会建立一个克隆节点，并在哈希表映射起来就行了。
+
+注意
+这里我们并不需要维护一个visited的集合，为什么呢？因为每次我们遇到一个之前没见过图节点，我们都会给它建立一个克隆节点，然后在哈希表中映射起来，并把这个图节点也放入队列中。所以只要哈希表中有这个图节点，就说明我们之前已经将该图节点放入队列了，就不需要再处理了。不过还是要把该图节点的克隆节点放入父克隆节点的邻居中。
+
+/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
+ * };
+ */
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if(node==null) return null;
+        Queue<UndirectedGraphNode> res=new LinkedList<UndirectedGraphNode>();
+        Map<UndirectedGraphNode,UndirectedGraphNode> map=new HashMap<UndirectedGraphNode,UndirectedGraphNode>();
+        UndirectedGraphNode root=new UndirectedGraphNode(node.label);
+        map.put(node, root);
+        res.offer(node);
+        while(!res.isEmpty()){
+            UndirectedGraphNode curr=res.poll();
+            for(UndirectedGraphNode oldnbor: curr.neighbors){
+                if(!map.containsKey(oldnbor)){
+                    UndirectedGraphNode newN=new UndirectedGraphNode(oldnbor.label);
+                    map.put(oldnbor, newN);
+                    res.offer(oldnbor);
+                }
+                map.get(curr).neighbors.add(map.get(oldnbor));
+            }
+        }
+        return root;
+    }
+}

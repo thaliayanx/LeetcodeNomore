@@ -1,0 +1,78 @@
+140. Word Break II
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. You may assume the dictionary does not contain duplicate words.
+
+Return all such possible sentences.
+
+For example, given
+s = "catsanddog",
+dict = ["cat", "cats", "and", "sand", "dog"].
+
+A solution is ["cats and dog", "cat sand dog"].
+
+UPDATE (2017/1/4):
+The wordDict parameter had been changed to a list of strings (instead of a set of strings). Please reload the code definition to get the latest changes.
+
+动态规划
+复杂度
+时间 O(N^2) 空间 O(N^2)
+
+思路
+我们从第一个字母开始，遍历字典，看从第一个字母开始能组成哪个在字典里的词，如果找到一个，就在这个词的结束位置下一个字母处，建立一个列表，记录下这个词（保存到一个列表的数组）。当遍历完这个词典并找出所有以第一个字母开头的词以后，我们进入下一轮搜索。下一轮搜索只在之前找到的词的后面位置开始，如果这个位置不是一个词的下一个字母位置，我们就跳过。这样我们相当于构建了一个树（实际上是列表数组），每个找到的词都是这个树的一个分支。有了这个“树”，然后我们再用深度优先搜索，把路径加到结果当中就行了。
+
+c
+a
+t                *              *
+s -- cat         |              |
+a -- cats        cats          cats
+n                 \            /
+d                  \          /
+d -- and, sand      and    sand
+o                    \      /
+g                     \    /
+  -- dog                dog
+  
+注意
+在backtracking的时候不用考虑下标超界（小于0）的情况，直接将所有到0的都加入结果就行了，因为我们在建这个路径时，就是从0开始建的，不可能超界。
+
+public List<String> res = new LinkedList<String>();
+    
+    public List<String> wordBreak(String s, Set<String> wordDict) {
+        List<String> dp[] = new ArrayList[s.length()+1];
+        dp[0] = new ArrayList<String>();
+        for(int i = 0; i < s.length(); i++){
+            // 只在单词的后一个字母开始寻找，否则跳过
+            if(dp[i]==null) continue;
+            // 看从当前字母开始能组成哪个在字典里的词
+            for(String word : wordDict){
+                int len = word.length();
+                if(i + len > s.length()) continue;
+                String sub = s.substring(i, i+len);
+                if(word.equals(sub)){
+                    if(dp[i + len] == null){
+                        dp[i + len] = new ArrayList<String>();
+                    }
+                    dp[i + len].add(word);
+                }
+            }
+        }
+        // 如果数组末尾不存在单词，说明找不到分解方法
+        if(dp[s.length()]!=null) backTrack(dp, s.length(), new ArrayList<String>());
+        return res;
+    }
+    
+    private void backTrack(List<String> dp[], int end, ArrayList<String> tmp){
+        if(end <= 0){
+            String path = tmp.get(tmp.size()-1);
+            for(int i = tmp.size() - 2; i >= 0; i--){
+                path += " " + tmp.get(i);
+            }
+            res.add(path);
+            return;
+        }
+        for(String word : dp[end]){
+            tmp.add(word);
+            backTrack(dp, end - word.length(), tmp);
+            tmp.remove(tmp.size()-1);
+        }
+    }
+}

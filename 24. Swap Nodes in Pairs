@@ -1,0 +1,46 @@
+24. Swap Nodes in Pairs
+Given a linked list, swap every two adjacent nodes and return its head.
+
+For example,
+Given 1->2->3->4, you should return the list as 2->1->4->3.
+
+Your algorithm should use only constant space. You may not modify the values in the list, only nodes itself can be changed.
+
+Solution
+
+如果需要交换两个节点的位置，则对这两个节点的前驱节点，它们的next指针会受到影响；这两个节点本身的next指针，也会受到影响。但是，如下过程总是可以实现交换：
+
+先交换两个前驱节点的next指针的值；
+再交换这两个节点的next指针的值。
+无论这两个节点的相对位置和绝对位置如何，以上的处理方式总是成立。
+
+Complexity
+
+时间复杂度 O(n)
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public ListNode swapPairs(ListNode head) {
+    	if (head == null) return null;
+    	ListNode dummy=new ListNode(-1);
+        dummy.next=head;
+    	ListNode backUp=dummy;
+    	while(head!=null && head.next!=null){
+    		ListNode next=head.next;
+    		dummy.next=next;
+    		head.next=next.next;
+    		next.next=head;
+    		dummy=head;
+    		head=head.next;
+
+    	}
+    	return backUp.next;
+    }
+}

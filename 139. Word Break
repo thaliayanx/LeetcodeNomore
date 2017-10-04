@@ -1,0 +1,45 @@
+139. Word Break
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+
+For example, given
+s = "leetcode",
+dict = ["leet", "code"].
+
+Return true because "leetcode" can be segmented as "leet code".
+
+UPDATE (2017/1/4):
+The wordDict parameter had been changed to a list of strings (instead of a set of strings). Please reload the code definition to get the latest changes.
+
+动态规划
+复杂度
+时间 O(N^2) 空间 O(N)
+
+思路
+如果一个单词存在一种分解方法，分解后每一块都在字典中，那必定满足这么一个条件：对于该单词的最后一个分割点，这个分割点到单词末尾所组成的字符串是一个单词，而这个分割点到单词开头所组成的字符串也是可分解的。所以只要验证满足这个条件，我们则可以确定这个较长的字符串也是可分解的。
+
+finishleetcode
+finishleetco de
+true         false
+finishleet code
+false      true
+finish leetcode
+true   true
+所以我们用外层循环来控制待验证的字符串的长度，而用内层的循环来寻找这么一个分割点，可以把字符串分成一个单词和一个同样可分解的子字符串。同时，我们用数组记录下字符串长度递增时可分解的情况，以供之后使用，避免重复计算。
+
+public class Solution {
+    public boolean wordBreak(String s, Set<String> wordDict) {
+    	boolean[] dp=new boolean[s.length()+1];
+    	Arrays.fill(dp, false);
+    	dp[s.length()]=true;
+    	for(int i=s.length();i>=0;i--){
+    		for(int j=i;j<s.length();j++){
+    			String sub=s.substring(i, j+1);
+    			if(wordDict.contains(sub)&&dp[j+1]){
+    				dp[i]=true;
+    				break;
+    			}
+    		}
+    	}
+    	return dp[0];
+    ｝
+｝

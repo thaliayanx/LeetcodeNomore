@@ -1,0 +1,49 @@
+240. Search a 2D Matrix II
+Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+
+Integers in each row are sorted in ascending from left to right.
+Integers in each column are sorted in ascending from top to bottom.
+For example,
+
+Consider the following matrix:
+
+[
+  [1,   4,  7, 11, 15],
+  [2,   5,  8, 12, 19],
+  [3,   6,  9, 16, 22],
+  [10, 13, 14, 17, 24],
+  [18, 21, 23, 26, 30]
+]
+Given target = 5, return true.
+
+Given target = 20, return false.
+
+贪心法
+复杂度
+时间 O(N+M) 空间 O(1)
+
+思路
+虽说该方法叫贪心法不太得当，但是贪心最能描述该方法的过程。由于数组的特性，我们可以从二维数组的右上角出发，如果该数比目标大，则向左移动（左边的数字肯定更小）。如果该数比目标小，则向下移动（下边的数字肯定更大）。这样反复重复该过程就能找到目标数。如果直到左下角都没有该数，说明找不到该数。同样的，这题也可以从左下角向右上角寻找。
+
+代码
+public class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length == 0){
+            return false;
+        }
+        int i = 0, j = matrix[0].length - 1;
+        while(i < matrix.length && j >= 0){
+            int curr = matrix[i][j];
+            if(curr == target){
+                return true;
+            // 比目标小则向下
+            } else if(curr > target){
+                j--;
+            // 比目标大则向左
+            } else {
+                i++;
+            }
+        }
+        return false;
+    }
+}

@@ -1,0 +1,66 @@
+227. Basic Calculator II
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string contains only non-negative integers, +, -, *, / operators and empty spaces . The integer division should truncate toward zero.
+
+You may assume that the given expression is always valid.
+
+Some examples:
+"3+2*2" = 7
+" 3/2 " = 1
+" 3+5 / 2 " = 5
+Note: Do not use the eval built-in library function.
+
+栈法
+复杂度
+时间 O(N) 空间 O(N)
+
+思路
+因为乘法和除法不仅要知道下一个数，也要知道上一个数。所以我们用一个栈把上次的数存起来，遇到加减法就直接将数字压入栈中，遇到乘除法就把栈顶拿出来乘或除一下新数，再压回去。最后我们把栈里所有数加起来就行了。
+
+注意
+先用String.replace()去掉所有的空格
+
+代码
+public class Solution {
+    public int calculate(String s) {
+        s = s.replace(" ", "");
+        Stack<Long> stk = new Stack<Long>();
+        String firstNum = getNum(0, s);
+        stk.push(Long.parseLong(firstNum));
+        int i = firstNum.length();
+        while(i < s.length()){
+            char c = s.charAt(i);
+            // 拿出下一个数字
+            String numStr = getNum(i + 1, s);
+            if(c == '+'){
+                stk.push(Long.parseLong(numStr));
+            }
+            if(c == '-'){
+                stk.push(-Long.parseLong(numStr));
+            }
+            if(c == '*'){
+                stk.push(stk.pop()*Long.parseLong(numStr));
+            }
+            if(c == '/'){
+                stk.push(stk.pop()/Long.parseLong(numStr));
+            }
+            i = i+ numStr.length() + 1;
+        }
+        long res = 0;
+        while(!stk.isEmpty()){
+            res += stk.pop();
+        }
+        return (int)res;
+    }
+    
+    private String getNum(int i, String s){
+        StringBuilder num = new StringBuilder();
+        while(i < s.length() && Character.isDigit(s.charAt(i))){
+            num.append(s.charAt(i));
+            i++;
+        }
+        return num.toString();
+    }
+    
+}
